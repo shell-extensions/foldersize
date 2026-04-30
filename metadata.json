@@ -4,7 +4,7 @@
   "description": "GNOME folder size extension with async jobs and multilingual support.",
   "gettext-domain": "foldersize",
   "version": 3,
-  "shell-version": ["45", "46", "47", "48"],
+  "shell-version": ["45", "46", "47", "48", "50"],
   "settings-schema": "org.gnome.shell.extensions.foldersize",
   "url": "https://github.com/shell-extensions/foldersize"
 }
