@@ -36,6 +36,18 @@ export default class FolderSizePrefs extends ExtensionPreferences {
         behaviorGroup.add(this._spinRow(settings, _('Rotate interval (s)'), 'rotate-interval', 2, 60, 1));
         behaviorGroup.add(this._spinRow(settings, _('Long job threshold (s)'), 'long-job-threshold', 10, 3600, 10));
 
+        const integrationRow = new Adw.ActionRow({
+            title: _('Pause the scan from Service Pauser'),
+            subtitle: _('The Service Pauser extension can pause “Auto scan” from its pause button and hides this toggle while doing so.'),
+        });
+        const serviceLinkButton = new Gtk.LinkButton({
+            label: _('Get Service Pauser'),
+            uri: 'https://github.com/shell-extensions/service-pauser',
+            valign: Gtk.Align.CENTER,
+        });
+        integrationRow.add_suffix(serviceLinkButton);
+        behaviorGroup.add(integrationRow);
+
         window.set_default_size(520, 560);
     }
 

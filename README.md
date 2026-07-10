@@ -35,3 +35,4 @@ Replace the extension directory with the new version, re-run `glib-compile-schem
 - Settings are stored in GSettings schema `org.gnome.shell.extensions.foldersize`. Fallback config file: `~/.config/foldersize.conf`.
 - Quick Settings toggle can be hidden in Preferences (Show Quick Settings toggle).
 - If Nautilus still shows the old version after disable/enable, run `nautilus -q`.
+- The folder scan (`auto-scan`) can be paused centrally through the [Service Pauser](https://github.com/shell-extensions/service-pauser) extension's pause button. When Service Pauser manages this switch, it hides this extension's own Quick Settings toggle automatically since it would be redundant.

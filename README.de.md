@@ -35,3 +35,4 @@ Erweiterungsverzeichnis ersetzen, `glib-compile-schemas` erneut ausführen, GNOM
 - Einstellungen: GSettings Schema `org.gnome.shell.extensions.foldersize`, Fallback-Datei `~/.config/foldersize.conf`.
 - Der Quick-Settings-Schalter kann in den Einstellungen (Schnelleinstellungen-Schalter anzeigen) ausgeblendet werden.
 - Wenn Nautilus nach Deaktivierung noch aktiv ist: `nautilus -q`.
+- Der Ordner-Scan (`auto-scan`) lässt sich zentral über den Pause-Button der Erweiterung [Service Pauser](https://github.com/shell-extensions/service-pauser) pausieren. Verwaltet Service Pauser diesen Schalter, blendet es den eigenen Quick-Settings-Schalter dieser Erweiterung automatisch aus, da er dann überflüssig wäre.

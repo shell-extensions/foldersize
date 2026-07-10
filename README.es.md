@@ -35,3 +35,4 @@ Reemplazar el directorio, ejecutar `glib-compile-schemas`, reiniciar GNOME Shell
 - Ajustes en el esquema GSettings `org.gnome.shell.extensions.foldersize`. Fallback: `~/.config/foldersize.conf`.
 - El interruptor de Ajustes rápidos se puede ocultar en Preferencias (Mostrar interruptor de Ajustes rápidos).
 - Si Nautilus sigue mostrando la extension tras desactivarla, ejecutar `nautilus -q`.
+- El escaneo de carpetas (`auto-scan`) se puede pausar de forma centralizada con el botón de pausa de la extensión [Service Pauser](https://github.com/shell-extensions/service-pauser). Cuando Service Pauser administra este interruptor, oculta automáticamente el interruptor propio de Ajustes rápidos de esta extensión, ya que quedaría redundante.

@@ -111,3 +111,19 @@ msgstr "Rotationsintervall (s)"
 #: prefs.js
 msgid "Long job threshold (s)"
 msgstr "Schwellwert für lange Jobs (s)"
+
+#: prefs.js
+msgid "Pause the scan from Service Pauser"
+msgstr "Scan über Service Pauser pausieren"
+
+#: prefs.js
+msgid ""
+"The Service Pauser extension can pause “Auto scan” from its pause button "
+"and hides this toggle while doing so."
+msgstr ""
+"Die Erweiterung Service Pauser kann „Automatischer Scan“ über ihren "
+"Pause-Schalter aussetzen und blendet diesen Schalter dabei aus."
+
+#: prefs.js
+msgid "Get Service Pauser"
+msgstr "Service Pauser beziehen"
