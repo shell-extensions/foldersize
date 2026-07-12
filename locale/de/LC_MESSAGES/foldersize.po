@@ -4,18 +4,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Language: de\n"
 
-#: extension.js
-msgid "Folder Size"
-msgstr "Ordnergröße"
-
-#: extension.js
-msgid "Scan on"
-msgstr "Scan an"
-
-#: extension.js
-msgid "Scan off"
-msgstr "Scan aus"
-
 #: foldersize.py
 msgid "Folder size"
 msgstr "Ordnergröße"
@@ -55,75 +43,3 @@ msgstr "Ordnergrößen-Scan aktivieren"
 #: foldersize.py
 msgid "Toggle automatic folder size calculation"
 msgstr "Automatische Ordnergrößenberechnung umschalten"
-
-#: prefs.js
-msgid "General"
-msgstr "Allgemein"
-
-#: prefs.js
-msgid "Cache TTL (s)"
-msgstr "Cache-TTL (s)"
-
-#: prefs.js
-msgid "Max workers"
-msgstr "Maximale Worker"
-
-#: prefs.js
-msgid "du timeout (s)"
-msgstr "du-Timeout (s)"
-
-#: prefs.js
-msgid "Queue timeout (s)"
-msgstr "Warteschlangen-Timeout (s)"
-
-#: prefs.js
-msgid "Display"
-msgstr "Anzeige"
-
-#: prefs.js
-msgid "Decimal places"
-msgstr "Dezimalstellen"
-
-#: prefs.js
-msgid "Binary units (KiB/MiB)"
-msgstr "Binäre Einheiten (KiB/MiB)"
-
-#: prefs.js
-msgid "Behavior"
-msgstr "Verhalten"
-
-#: prefs.js
-msgid "Auto scan"
-msgstr "Automatischer Scan"
-
-#: prefs.js
-msgid "Show Quick Settings toggle"
-msgstr "Schnelleinstellungen-Schalter anzeigen"
-
-#: prefs.js
-msgid "Skip other mountpoints"
-msgstr "Andere Mountpoints überspringen"
-
-#: prefs.js
-msgid "Rotate interval (s)"
-msgstr "Rotationsintervall (s)"
-
-#: prefs.js
-msgid "Long job threshold (s)"
-msgstr "Schwellwert für lange Jobs (s)"
-
-#: prefs.js
-msgid "Pause the scan from Service Pauser"
-msgstr "Scan über Service Pauser pausieren"
-
-#: prefs.js
-msgid ""
-"The Service Pauser extension can pause “Auto scan” from its pause button "
-"and hides this toggle while doing so."
-msgstr ""
-"Die Erweiterung Service Pauser kann „Automatischer Scan“ über ihren "
-"Pause-Schalter aussetzen und blendet diesen Schalter dabei aus."
-
-#: prefs.js
-msgid "Get Service Pauser"
-msgstr "Service Pauser beziehen"

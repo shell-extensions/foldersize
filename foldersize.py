@@ -53,41 +53,7 @@ def _as_bool(val, default):
         return False
     return default
 
-def _get_gsettings():
-    try:
-        schema_dir = os.path.join(BASE_DIR, "schemas")
-        schema_source = Gio.SettingsSchemaSource.new_from_directory(
-            schema_dir,
-            Gio.SettingsSchemaSource.get_default(),
-            False
-        )
-        schema = schema_source.lookup("org.gnome.shell.extensions.foldersize", True)
-        if not schema:
-            logger.info("GSettings schema not found, falling back to INI config")
-            return None
-        return Gio.Settings.new_full(schema, None, None)
-    except (OSError, GLib.Error) as e:
-        logger.warning(f"Failed to load GSettings: {e}")
-        return None
-
 def _load_config():
-    # Vorrang: GSettings, danach Fallback auf INI-Datei
-    gs = _get_gsettings()
-    if gs:
-        return {
-            "cache_ttl": gs.get_int("cache-ttl"),
-            "max_workers": gs.get_int("max-workers"),
-            "du_timeout": gs.get_int("du-timeout"),
-            "skip_mountpoints": gs.get_boolean("skip-mountpoints"),
-            "queue_timeout": gs.get_int("queue-timeout"),
-            "rotate_interval": gs.get_int("rotate-interval"),
-            "long_job_threshold": gs.get_int("long-job-threshold"),
-            "decimal_places": gs.get_int("decimal-places"),
-            "binary_units": gs.get_boolean("binary-units"),
-            "auto_scan": gs.get_boolean("auto-scan"),
-            "gsettings": gs,
-        }
-
     cfg = configparser.ConfigParser()
     cfg.read_dict({"FolderSize": DEFAULT_CONFIG})
     if os.path.exists(CONFIG_PATH):
@@ -107,12 +73,45 @@ def _load_config():
         "decimal_places": int(section.get("decimal_places", DEFAULT_CONFIG["decimal_places"])),
         "binary_units": _as_bool(section.get("binary_units"), True),
         "auto_scan": _as_bool(section.get("auto_scan"), True),
-        "gsettings": None,
     }
 
-CFG = _load_config()
 
-GSETTINGS = CFG.get("gsettings")
+def _read_auto_scan():
+    """Liest ausschließlich den auto_scan-Wert neu aus der INI-Datei.
+
+    Wird vom FileMonitor (siehe __init__) bei externen Änderungen der
+    Konfigurationsdatei aufgerufen - leichter als ein kompletter
+    _load_config()-Durchlauf, da nur ein einzelner Wert gebraucht wird.
+    """
+    cfg = configparser.ConfigParser()
+    cfg.read_dict({"FolderSize": DEFAULT_CONFIG})
+    if os.path.exists(CONFIG_PATH):
+        try:
+            cfg.read(CONFIG_PATH)
+        except (OSError, configparser.Error) as e:
+            logger.warning(f"Failed to read config file {CONFIG_PATH}: {e}")
+    return _as_bool(cfg["FolderSize"].get("auto_scan"), True)
+
+
+def _save_config_value(key, value):
+    cfg = configparser.ConfigParser()
+    cfg.read_dict({"FolderSize": DEFAULT_CONFIG})
+    if os.path.exists(CONFIG_PATH):
+        try:
+            cfg.read(CONFIG_PATH)
+        except (OSError, configparser.Error) as e:
+            logger.warning(f"Failed to read config file {CONFIG_PATH} before write: {e}")
+    cfg["FolderSize"][key] = value
+
+    tmp_path = CONFIG_PATH + ".tmp"
+    try:
+        with open(tmp_path, "w") as f:
+            cfg.write(f)
+        os.replace(tmp_path, CONFIG_PATH)
+    except (OSError, configparser.Error) as e:
+        logger.warning(f"Failed to save config file {CONFIG_PATH}: {e}")
+
+CFG = _load_config()
 
 CACHE_TTL         = CFG["cache_ttl"]
 MAX_WORKERS       = CFG["max_workers"]
@@ -222,7 +221,7 @@ class FolderSize(GObject.GObject,
     _scan_enabled = CFG["auto_scan"]
     _cache = OrderedDict()  # LRU cache: { path: (timestamp, size, running, process, queued, start_time) }
     _file_refs = {}         # { path: Nautilus.FileInfo }
-    _settings_signal_id = None
+    _config_monitor = None  # Gio.FileMonitor - muss referenziert bleiben, sonst GC'd
 
     def __init__(self):
         if not FolderSize._workers_started:
@@ -232,14 +231,15 @@ class FolderSize(GObject.GObject,
             FolderSize._workers_started = True
 
         GLib.timeout_add_seconds(ROTATE_INTERVAL, self._rotate_symbols)
-        if GSETTINGS and FolderSize._settings_signal_id is None:
+
+        if FolderSize._config_monitor is None:
             try:
-                FolderSize._settings_signal_id = GSETTINGS.connect(
-                    "changed::auto-scan",
-                    self._on_auto_scan_changed,
-                )
-            except Exception as e:
-                logger.warning(f"Failed to subscribe to auto-scan changes: {e}")
+                config_file = Gio.File.new_for_path(CONFIG_PATH)
+                monitor = config_file.monitor_file(Gio.FileMonitorFlags.NONE, None)
+                monitor.connect("changed", self._on_config_changed)
+                FolderSize._config_monitor = monitor
+            except (OSError, GLib.Error) as e:
+                logger.warning(f"Failed to watch config file for changes: {e}")
 
     def _evict_cache_if_needed(self):
         """Remove oldest cache entries if cache size exceeds limit (LRU)."""
@@ -514,11 +514,10 @@ class FolderSize(GObject.GObject,
 
     def _toggle_scan(self, *_args):
         FolderSize._scan_enabled = not FolderSize._scan_enabled
-        if GSETTINGS:
-            try:
-                GSETTINGS.set_boolean("auto-scan", FolderSize._scan_enabled)
-            except Exception as e:
-                logger.warning(f"Failed to save auto-scan setting: {e}")
+        try:
+            _save_config_value("auto_scan", "true" if FolderSize._scan_enabled else "false")
+        except Exception as e:
+            logger.warning(f"Failed to save auto_scan setting: {e}")
         if not FolderSize._scan_enabled:
             self._stop_all_jobs()
         else:
@@ -556,13 +555,27 @@ class FolderSize(GObject.GObject,
         human = f"{size:.{DEC_PLACES}f}".rstrip("0").rstrip(".") + units[unit_idx]
         return f"{self._hidden_prefix(int(size_bytes))}{human}"
 
-    def _on_auto_scan_changed(self, settings, _key):
-        try:
-            enabled = settings.get_boolean("auto-scan")
-        except Exception as e:
-            logger.warning(f"Failed to read auto-scan setting: {e}")
+    def _on_config_changed(self, monitor, file, other_file, event_type):
+        # CHANGES_DONE_HINT wird nicht von jedem Backend zuverlässig gesendet,
+        # daher zusätzlich auf CHANGED reagieren. Der Guard unten (Vergleich
+        # mit _scan_enabled) macht mehrfache Events für denselben
+        # Schreibvorgang harmlos - ein erneutes Lesen kostet wenig.
+        if event_type not in (
+            Gio.FileMonitorEvent.CHANGED,
+            Gio.FileMonitorEvent.CHANGES_DONE_HINT,
+            Gio.FileMonitorEvent.CREATED,
+        ):
             return
 
+        try:
+            enabled = _read_auto_scan()
+        except Exception as e:
+            logger.warning(f"Failed to read auto_scan setting: {e}")
+            return
+
+        # Guard: Wenn wir selbst gerade denselben Wert geschrieben haben
+        # (_toggle_scan), ist enabled bereits identisch -> kein erneutes
+        # Stop/Resume, kein Ping-Pong zwischen Schreiber und Monitor.
         if enabled == FolderSize._scan_enabled:
             return
 
@@ -574,10 +587,29 @@ class FolderSize(GObject.GObject,
 
     # ========= Menü-Teil neu =========
 
+    def _toggle_scan_menu_item(self):
+        """
+        Baut den globalen Scan-Toggle als MenuItem. Wird sowohl im
+        Leerbereich-Menü als auch im Auswahl-Menü angeboten, da in der
+        Listenansicht oft kaum ein freier Bereich für einen Rechtsklick
+        auf den Hintergrund zu finden ist.
+        """
+        label = (_("Disable folder size scanning")
+                 if FolderSize._scan_enabled
+                 else _("Enable folder size scanning"))
+
+        item = Nautilus.MenuItem(
+            name="FolderSize::ToggleScan",
+            label=label,
+            tip=_("Toggle automatic folder size calculation"),
+        )
+        item.connect("activate", self._toggle_scan)
+        return item
+
     def get_file_items(self, *args):
         """
-        Kontextmenü-Eintrag nur anzeigen, wenn mindestens ein Verzeichnis
-        in der Auswahl enthalten ist. Dateien werden ignoriert.
+        "Neu berechnen" nur bei Verzeichnissen in der Auswahl, der globale
+        Scan-Toggle unabhängig davon immer.
         """
         if not args:
             return []
@@ -611,10 +643,18 @@ class FolderSize(GObject.GObject,
             item.connect("activate", self._recalc_selected, dir_files)
             items.append(item)
 
+        items.append(self._toggle_scan_menu_item())
+
         return items
 
     def get_background_items(self, *args):
-        return []
+        """
+        Globaler Rechtsklick-Toggle (auf leeren Ordnerbereich) zum
+        Pausieren/Fortsetzen des automatischen Scans. Ersetzt den früheren
+        GNOME-Shell-Quick-Settings-Toggle, jetzt dass foldersize eine reine
+        Nautilus-Extension ist.
+        """
+        return [self._toggle_scan_menu_item()]
 
     def _recalc_selected(self, _menu, dir_files):
         """

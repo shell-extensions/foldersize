@@ -4,18 +4,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Language: en\n"
 
-#: extension.js
-msgid "Folder Size"
-msgstr "Folder Size"
-
-#: extension.js
-msgid "Scan on"
-msgstr "Scan on"
-
-#: extension.js
-msgid "Scan off"
-msgstr "Scan off"
-
 #: foldersize.py
 msgid "Folder size"
 msgstr "Folder size"
@@ -55,59 +43,3 @@ msgstr "Enable folder size scanning"
 #: foldersize.py
 msgid "Toggle automatic folder size calculation"
 msgstr "Toggle automatic folder size calculation"
-
-#: prefs.js
-msgid "General"
-msgstr "General"
-
-#: prefs.js
-msgid "Cache TTL (s)"
-msgstr "Cache TTL (s)"
-
-#: prefs.js
-msgid "Max workers"
-msgstr "Max workers"
-
-#: prefs.js
-msgid "du timeout (s)"
-msgstr "du timeout (s)"
-
-#: prefs.js
-msgid "Queue timeout (s)"
-msgstr "Queue timeout (s)"
-
-#: prefs.js
-msgid "Display"
-msgstr "Display"
-
-#: prefs.js
-msgid "Decimal places"
-msgstr "Decimal places"
-
-#: prefs.js
-msgid "Binary units (KiB/MiB)"
-msgstr "Binary units (KiB/MiB)"
-
-#: prefs.js
-msgid "Behavior"
-msgstr "Behavior"
-
-#: prefs.js
-msgid "Auto scan"
-msgstr "Auto scan"
-
-#: prefs.js
-msgid "Show Quick Settings toggle"
-msgstr "Show Quick Settings toggle"
-
-#: prefs.js
-msgid "Skip other mountpoints"
-msgstr "Skip other mountpoints"
-
-#: prefs.js
-msgid "Rotate interval (s)"
-msgstr "Rotate interval (s)"
-
-#: prefs.js
-msgid "Long job threshold (s)"
-msgstr "Long job threshold (s)"

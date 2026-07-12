@@ -1,38 +1,86 @@
-# Folder Size (GNOME Shell + Nautilus)
+# Folder Size (extensión de Nautilus)
 
-![Release](https://img.shields.io/github/v/release/shell-extensions/foldersize?sort=semver) ![GNOME Shell](https://img.shields.io/badge/GNOME%20Shell-45--48-4A86CF) ![Nautilus](https://img.shields.io/badge/Nautilus-Extension-4A86CF)
+![Release](https://img.shields.io/github/v/release/shell-extensions/foldersize?sort=semver) ![Nautilus](https://img.shields.io/badge/Nautilus-Extension-4A86CF)
 
 ![Screenshot](image/Screenshot.png)
-![Menu de la extension](image/Screenshot_extension.png)
+![Menú contextual](image/Screenshot_extension.png)
 
 [English](README.md) | [Deutsch](README.de.md) | [Espanol](README.es.md)
 
-Muestra el tamano de carpetas en la vista de lista y menus de Nautilus. La parte de GNOME Shell administra el hook de Python en Nautilus: al activar crea el symlink y al desactivar lo elimina.
+Muestra el tamaño de las carpetas en la vista de lista de Nautilus. Los
+tamaños se calculan de forma asíncrona (mediante `du`), se guardan en caché
+y se muestran con iconos de estado mientras un cálculo está en curso o en
+cola. Una entrada del menú contextual permite recalcular una carpeta de
+inmediato, y otra (clic derecho en un espacio vacío) activa o desactiva el
+escaneo automático.
+
+Es una extensión `nautilus-python` pura — no requiere ningún componente de
+GNOME Shell.
 
 ## Requisitos
-- GNOME Shell 45–48
-- Nautilus con nautilus-python
+- Nautilus con `nautilus-python`
 - `du` en PATH (coreutils)
 
-## Instalacion (usuario actual)
-1) Copiar la carpeta a `~/.local/share/gnome-shell/extensions/foldersize@yurij.de`.
-2) Compilar esquemas: `glib-compile-schemas ~/.local/share/gnome-shell/extensions/foldersize@yurij.de/schemas`.
-3) Reiniciar GNOME Shell (Wayland: cerrar sesion; X11: Alt+F2, `r`).
-4) Activar: `gnome-extensions enable foldersize@yurij.de` o usar la app Extensions. Al activar se crea el symlink de Nautilus de forma automatica.
-5) Reiniciar Nautilus: `nautilus -q`.
+## Instalación (usuario actual)
+```sh
+git clone https://github.com/shell-extensions/foldersize.git
+cd foldersize
+make install
+nautilus -q
+```
+`make install` compila las traducciones y enlaza `foldersize.py` en
+`~/.local/share/nautilus-python/extensions/`. `nautilus -q` reinicia
+Nautilus para que cargue la extensión.
 
-## Desactivar y eliminar
-- Desactivar en Extensions o con `gnome-extensions disable foldersize@yurij.de`. Esto borra el symlink de Nautilus y limpia `__pycache__`; reiniciar Nautilus para descargarlo.
-- Para desinstalar: eliminar `~/.local/share/gnome-shell/extensions/foldersize@yurij.de`.
+## Desinstalar
+```sh
+make uninstall
+nautilus -q
+```
+
+## Configuración
+Los ajustes se guardan en `~/.config/foldersize.conf` (formato INI, sección
+`[FolderSize]`). El archivo se crea con valores por defecto en el primer
+uso; puede editarse directamente, o alternar `auto_scan` con la entrada del
+menú contextual "Activar/Desactivar el escaneo de tamaño de carpetas".
+Claves disponibles:
+
+| Clave | Por defecto | Significado |
+|---|---|---|
+| `cache_ttl` | `3600` | Segundos que un tamaño en caché permanece válido |
+| `max_workers` | `10` | Hilos trabajadores paralelos de `du` |
+| `du_timeout` | `1800` | Segundos antes de abortar una ejecución de `du` |
+| `skip_mountpoints` | `true` | No cruzar a otros sistemas de archivos (`du -x`) |
+| `queue_timeout` | `300` | Segundos antes de reintentar un trabajo atascado |
+| `rotate_interval` | `10` | Segundos entre fotogramas de animación del icono de estado |
+| `long_job_threshold` | `300` | Segundos antes de marcar un trabajo en curso como "largo" |
+| `decimal_places` | `1` | Decimales en el tamaño mostrado |
+| `binary_units` | `true` | Usar KiB/MiB/GiB en lugar de kB/MB/GB |
+| `auto_scan` | `true` | Si las carpetas se escanean automáticamente |
+
+### Cambiar de unidades (MiB/GiB vs. MB/GB)
+Ya no existe un diálogo de preferencias, así que esto se hace editando el
+archivo de configuración directamente:
+```sh
+sed -i 's/^binary_units = .*/binary_units = false/' ~/.config/foldersize.conf
+nautilus -q
+```
+(Usa `true` para volver a unidades binarias.) A diferencia de `auto_scan`,
+esta y el resto de claves (salvo `auto_scan`) solo se leen una vez al
+iniciar la extensión — `nautilus -q` es necesario para que el cambio surta
+efecto; guardar el archivo por sí solo no basta.
+
+## Pausar el escaneo externamente
+Cambiar `auto_scan` en `~/.config/foldersize.conf` tiene efecto inmediato
+en cualquier proceso de Nautilus en ejecución — la extensión vigila el
+archivo en busca de cambios. Esto permite que cualquier herramienta externa
+(por ejemplo, un pausador de servicios) pause o reanude el escaneo
+simplemente escribiendo `auto_scan = false` o `true` en ese archivo; no se
+necesita D-Bus ni GSettings.
 
 ## Traducciones
-Ejecutar `make -C ~/.local/share/gnome-shell/extensions/foldersize@yurij.de` para compilar `.po` a `.mo`.
-
-## Actualizacion
-Reemplazar el directorio, ejecutar `glib-compile-schemas`, reiniciar GNOME Shell y Nautilus.
+Ejecutar `make compile` (o `make`) para compilar `.po` a `.mo`.
 
 ## Notas
-- Ajustes en el esquema GSettings `org.gnome.shell.extensions.foldersize`. Fallback: `~/.config/foldersize.conf`.
-- El interruptor de Ajustes rápidos se puede ocultar en Preferencias (Mostrar interruptor de Ajustes rápidos).
-- Si Nautilus sigue mostrando la extension tras desactivarla, ejecutar `nautilus -q`.
-- El escaneo de carpetas (`auto-scan`) se puede pausar de forma centralizada con el botón de pausa de la extensión [Service Pauser](https://github.com/shell-extensions/service-pauser). Cuando Service Pauser administra este interruptor, oculta automáticamente el interruptor propio de Ajustes rápidos de esta extensión, ya que quedaría redundante.
+- Si Nautilus sigue mostrando la versión anterior tras instalar/desinstalar, ejecutar `nautilus -q`.
+- El estado se mantiene en memoria por proceso de Nautilus; los tamaños se recalculan tras un reinicio (según `cache_ttl`).

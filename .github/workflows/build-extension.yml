@@ -1,4 +1,4 @@
-name: Build GNOME Shell extension
+name: Build Nautilus extension
 
 on:
   push:
@@ -21,13 +21,10 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y gettext glib2.0-bin zip
+          sudo apt-get install -y gettext zip
 
       - name: Build translations
         run: make
-
-      - name: Compile schemas
-        run: glib-compile-schemas schemas
 
       - name: Pack extension
         id: pack
@@ -38,7 +35,7 @@ jobs:
               print(json.load(f)['uuid'])
           PY
           )
-          zip_name="${uuid}.shell-extension.zip"
+          zip_name="${uuid}.nautilus-extension.zip"
           mkdir -p dist
           zip -qr "dist/${zip_name}" . \
             -x ".git/*" -x ".github/*" -x "dist/*" -x ".gitignore"
