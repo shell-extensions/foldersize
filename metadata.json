@@ -1,8 +1,8 @@
 {
   "uuid": "foldersize@yurij.de",
   "name": "Folder Size",
-  "description": "Nautilus folder size column with async jobs and multilingual support.",
+  "description": "Folder size column for Nautilus, Caja and Nemo with async jobs and multilingual support.",
   "gettext-domain": "foldersize",
-  "version": 3,
-  "url": "https://github.com/shell-extensions/foldersize"
+  "version": 4,
+  "url": "https://github.com/system-extensions/foldersize"
 }

@@ -1,4 +1,4 @@
-name: Build Nautilus extension
+name: Build file manager extension
 
 on:
   push:
@@ -21,25 +21,19 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y gettext zip
+          sudo apt-get install -y gettext zip python3-gi python3-nautilus python3-caja nemo-python
 
       - name: Build translations
         run: make
 
+      - name: Check imports
+        run: make check
+
       - name: Pack extension
         id: pack
         run: |
-          uuid=$(python3 - <<'PY'
-          import json
-          with open('metadata.json', 'r', encoding='utf-8') as f:
-              print(json.load(f)['uuid'])
-          PY
-          )
-          zip_name="${uuid}.nautilus-extension.zip"
-          mkdir -p dist
-          zip -qr "dist/${zip_name}" . \
-            -x ".git/*" -x ".github/*" -x "dist/*" -x ".gitignore"
-          echo "zip_name=${zip_name}" >> "$GITHUB_OUTPUT"
+          make pack
+          echo "zip_name=foldersize.file-manager-extension.zip" >> "$GITHUB_OUTPUT"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

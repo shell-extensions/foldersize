@@ -1,5 +1,24 @@
 # Release Notes
 
+## v0.4.0
+
+### Summary
+- Add shared Nautilus, Caja and Nemo support from one repository.
+- Move the project under `system-extensions/foldersize`.
+
+### Changes
+- Split the implementation into a shared core plus lightweight file-manager adapters.
+- Add install and uninstall targets for Nautilus, Caja, Nemo and all supported adapters.
+- Add Debian/Ubuntu dependency targets for the matching Python loader packages.
+- Add the folder-size column to supported file-manager list-view settings during install.
+- Prefer explicit `LC_ALL`/`LC_MESSAGES` over `LANGUAGE` when choosing extension translations.
+- Build a generic `foldersize.file-manager-extension.zip` release artifact.
+- Update documentation and metadata for the new GitHub organization.
+
+### Testing
+- [ ] Run `make check` and confirm all three adapter imports succeed.
+- [ ] Install with `make install-all`, then restart and inspect Nautilus, Caja and Nemo list views.
+
 ## v0.3.1
 
 ### Summary

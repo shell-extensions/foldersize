@@ -1,40 +1,62 @@
-# Folder Size (Nautilus-Erweiterung)
+# Folder Size (Dateimanager-Erweiterung)
 
-![Release](https://img.shields.io/github/v/release/shell-extensions/foldersize?sort=semver) ![Nautilus](https://img.shields.io/badge/Nautilus-Extension-4A86CF)
+![Release](https://img.shields.io/github/v/release/system-extensions/foldersize?sort=semver) ![Nautilus](https://img.shields.io/badge/Nautilus-unterstuetzt-4A86CF) ![Caja](https://img.shields.io/badge/Caja-unterstuetzt-87A96B) ![Nemo](https://img.shields.io/badge/Nemo-unterstuetzt-B8894D)
 
 ![Screenshot](image/Screenshot.png)
 ![Kontextmenü](image/Screenshot_extension.png)
 
 [English](README.md) | [Deutsch](README.de.md) | [Espanol](README.es.md)
 
-Zeigt Ordnergrößen in der Nautilus-Listenansicht. Größen werden asynchron
-berechnet (über `du`), zwischengespeichert und mit Statussymbolen
-angezeigt, solange eine Berechnung läuft oder in der Warteschlange steht.
-Ein Kontextmenü-Eintrag berechnet einen Ordner sofort neu, ein zweiter
-(Rechtsklick auf leeren Bereich) schaltet den automatischen Scan ein/aus.
+Zeigt Ordnergrößen in der Listenansicht von Nautilus, Caja und Nemo. Größen
+werden asynchron berechnet (über `du`), zwischengespeichert und mit
+Statussymbolen angezeigt, solange eine Berechnung läuft oder in der
+Warteschlange steht. Ein Kontextmenü-Eintrag berechnet einen Ordner sofort
+neu, ein zweiter (Rechtsklick auf leeren Bereich) schaltet den automatischen
+Scan ein/aus.
 
-Dies ist eine reine `nautilus-python`-Erweiterung — keine GNOME-Shell-
+Dies ist eine reine Python-Dateimanager-Erweiterung — keine GNOME-Shell-
 Komponente nötig.
 
 ## Voraussetzungen
-- Nautilus mit `nautilus-python`
+- Ein oder mehrere unterstützte Dateimanager:
+  - Nautilus mit `python3-nautilus`
+  - Caja mit `python3-caja`
+  - Nemo mit `nemo-python`
 - `du` im PATH (coreutils)
 
 ## Installation (nur aktueller Benutzer)
 ```sh
-git clone https://github.com/shell-extensions/foldersize.git
+git clone https://github.com/system-extensions/foldersize.git
 cd foldersize
-make install
-nautilus -q
+make deps-nautilus    # installiert python3-nautilus auf Debian/Ubuntu
+make deps-caja        # installiert python3-caja auf Debian/Ubuntu
+make deps-nemo        # installiert nemo-python auf Debian/Ubuntu
+make install-nautilus   # gleichbedeutend mit: make install
+make install-caja
+make install-nemo
 ```
-`make install` kompiliert die Übersetzungen und verlinkt `foldersize.py`
-nach `~/.local/share/nautilus-python/extensions/`. `nautilus -q` startet
-Nautilus neu, damit die Erweiterung geladen wird.
+
+Mit `make deps-all` und `make install-all` werden alle unterstützten
+Dateimanager-Adapter installiert. Die normalen Installationsziele prüfen
+zuerst das passende Python-Loader-Paket und nennen das exakte Dependency-Ziel,
+falls es fehlt.
+
+Die Installationsziele kompilieren Übersetzungen, verlinken den passenden
+Adapter plus gemeinsame Implementierung in die Benutzer-Erweiterungsverzeichnisse
+und tragen die Spalte `FolderSize::size` in die standardmäßig sichtbaren
+Listenansicht-Spalten ein, wenn der Dateimanager diese Einstellung bereitstellt:
+
+| Ziel | Erweiterungsverzeichnis | Neustart |
+|---|---|---|
+| `make install-nautilus` | `~/.local/share/nautilus-python/extensions/` | `nautilus -q` |
+| `make install-caja` | `~/.local/share/caja-python/extensions/` | `caja -q` |
+| `make install-nemo` | `~/.local/share/nemo-python/extensions/` | `nemo -q` |
 
 ## Deinstallieren
 ```sh
-make uninstall
-nautilus -q
+make uninstall-nautilus   # gleichbedeutend mit: make uninstall
+make uninstall-caja
+make uninstall-nemo
 ```
 
 ## Konfiguration
@@ -62,24 +84,25 @@ Einen Einstellungsdialog gibt es nicht mehr, das läuft über direktes
 Bearbeiten der Konfigurationsdatei:
 ```sh
 sed -i 's/^binary_units = .*/binary_units = false/' ~/.config/foldersize.conf
-nautilus -q
+nautilus -q   # oder: caja -q / nemo -q
 ```
 (Mit `true` wieder zurück auf binäre Einheiten.) Anders als `auto_scan`
 wird dieser und jeder andere Schlüssel außer `auto_scan` nur einmal beim
-Start der Erweiterung eingelesen — `nautilus -q` ist für die Wirkung
-nötig, reines Speichern der Datei reicht nicht.
+Start der Erweiterung eingelesen — ein Neustart des betroffenen
+Dateimanagers ist für die Wirkung nötig, reines Speichern der Datei reicht
+nicht.
 
 ## Scan von außen pausieren
 Ändert man `auto_scan` in `~/.config/foldersize.conf`, wirkt sich das sofort
-in jedem laufenden Nautilus-Prozess aus — die Erweiterung überwacht die
-Datei auf Änderungen. Dadurch kann jedes externe Werkzeug (etwa ein
-Service-Pauser) den Scan pausieren/fortsetzen, indem es `auto_scan = false`
-bzw. `true` in diese Datei schreibt; weder D-Bus noch GSettings sind dafür
-nötig.
+in jedem laufenden unterstützten Dateimanager-Prozess aus — die Erweiterung
+überwacht die Datei auf Änderungen. Dadurch kann jedes externe Werkzeug
+(etwa ein Service-Pauser) den Scan pausieren/fortsetzen, indem es
+`auto_scan = false` bzw. `true` in diese Datei schreibt; weder D-Bus noch
+GSettings sind dafür nötig.
 
 ## Übersetzungen
 `make compile` (oder `make`) ausführen, um `.po` zu `.mo` zu kompilieren.
 
 ## Hinweise
-- Zeigt Nautilus nach Installation/Deinstallation noch die alte Version: `nautilus -q`.
-- Der Zustand liegt im Arbeitsspeicher je Nautilus-Prozess; nach einem Neustart werden Größen neu berechnet (abhängig von `cache_ttl`).
+- Zeigt ein Dateimanager nach Installation/Deinstallation noch die alte Version, starte ihn mit `nautilus -q`, `caja -q` oder `nemo -q` neu.
+- Der Zustand liegt im Arbeitsspeicher je Dateimanager-Prozess; nach einem Neustart werden Größen neu berechnet (abhängig von `cache_ttl`).
