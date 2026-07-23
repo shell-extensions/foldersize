@@ -1,6 +1,6 @@
 # Folder Size (File Manager Extension)
 
-![Release](https://img.shields.io/github/v/release/system-extensions/foldersize?sort=semver) ![Nautilus](https://img.shields.io/badge/Nautilus-supported-4A86CF) ![Caja](https://img.shields.io/badge/Caja-supported-87A96B) ![Nemo](https://img.shields.io/badge/Nemo-supported-B8894D)
+![Release](https://img.shields.io/github/v/release/nautilus-extensions/foldersize?sort=semver) ![Nautilus](https://img.shields.io/badge/Nautilus-supported-4A86CF) ![Caja](https://img.shields.io/badge/Caja-supported-87A96B) ![Nemo](https://img.shields.io/badge/Nemo-supported-B8894D)
 
 ![Screenshot](image/Screenshot.png)
 ![Context menu](image/Screenshot_extension.png)
@@ -25,7 +25,7 @@ required.
 
 ## Installation (local user)
 ```sh
-git clone https://github.com/system-extensions/foldersize.git
+git clone https://github.com/nautilus-extensions/foldersize.git
 cd foldersize
 make deps-nautilus    # installs python3-nautilus on Debian/Ubuntu
 make deps-caja        # installs python3-caja on Debian/Ubuntu

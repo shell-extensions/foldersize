@@ -1,6 +1,6 @@
 # Folder Size (Dateimanager-Erweiterung)
 
-![Release](https://img.shields.io/github/v/release/system-extensions/foldersize?sort=semver) ![Nautilus](https://img.shields.io/badge/Nautilus-unterstuetzt-4A86CF) ![Caja](https://img.shields.io/badge/Caja-unterstuetzt-87A96B) ![Nemo](https://img.shields.io/badge/Nemo-unterstuetzt-B8894D)
+![Release](https://img.shields.io/github/v/release/nautilus-extensions/foldersize?sort=semver) ![Nautilus](https://img.shields.io/badge/Nautilus-unterstuetzt-4A86CF) ![Caja](https://img.shields.io/badge/Caja-unterstuetzt-87A96B) ![Nemo](https://img.shields.io/badge/Nemo-unterstuetzt-B8894D)
 
 ![Screenshot](image/Screenshot.png)
 ![Kontextmenü](image/Screenshot_extension.png)
@@ -26,7 +26,7 @@ Komponente nötig.
 
 ## Installation (nur aktueller Benutzer)
 ```sh
-git clone https://github.com/system-extensions/foldersize.git
+git clone https://github.com/nautilus-extensions/foldersize.git
 cd foldersize
 make deps-nautilus    # installiert python3-nautilus auf Debian/Ubuntu
 make deps-caja        # installiert python3-caja auf Debian/Ubuntu

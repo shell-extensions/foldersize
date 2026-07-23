@@ -1,6 +1,6 @@
 # Folder Size (extensión de gestores de archivos)
 
-![Release](https://img.shields.io/github/v/release/system-extensions/foldersize?sort=semver) ![Nautilus](https://img.shields.io/badge/Nautilus-compatible-4A86CF) ![Caja](https://img.shields.io/badge/Caja-compatible-87A96B) ![Nemo](https://img.shields.io/badge/Nemo-compatible-B8894D)
+![Release](https://img.shields.io/github/v/release/nautilus-extensions/foldersize?sort=semver) ![Nautilus](https://img.shields.io/badge/Nautilus-compatible-4A86CF) ![Caja](https://img.shields.io/badge/Caja-compatible-87A96B) ![Nemo](https://img.shields.io/badge/Nemo-compatible-B8894D)
 
 ![Screenshot](image/Screenshot.png)
 ![Menú contextual](image/Screenshot_extension.png)
@@ -26,7 +26,7 @@ componente de GNOME Shell.
 
 ## Instalación (usuario actual)
 ```sh
-git clone https://github.com/system-extensions/foldersize.git
+git clone https://github.com/nautilus-extensions/foldersize.git
 cd foldersize
 make deps-nautilus    # instala python3-nautilus en Debian/Ubuntu
 make deps-caja        # instala python3-caja en Debian/Ubuntu
