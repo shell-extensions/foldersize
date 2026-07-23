@@ -98,6 +98,8 @@ extensión vigila el archivo en busca de cambios. Esto permite que cualquier
 herramienta externa (por ejemplo, un pausador de servicios) pause o reanude
 el escaneo simplemente escribiendo `auto_scan = false` o `true` en ese
 archivo; no se necesita D-Bus ni GSettings.
+[Loadshed](https://github.com/shell-extensions/loadshed) es una de esas
+herramientas e incluye un preset de objetivo de archivo listo para Folder Size.
 
 ## Traducciones
 Ejecutar `make compile` (o `make`) para compilar `.po` a `.mo`.
@@ -105,3 +107,8 @@ Ejecutar `make compile` (o `make`) para compilar `.po` a `.mo`.
 ## Notas
 - Si un gestor de archivos sigue mostrando la versión anterior tras instalar/desinstalar, reinícialo con `nautilus -q`, `caja -q` o `nemo -q`.
 - El estado se mantiene en memoria por proceso del gestor de archivos; los tamaños se recalculan tras un reinicio (según `cache_ttl`).
+
+## Licencia
+
+Folder Size es software libre, publicado bajo la GNU General Public License v3.0 o posterior
+(GPL-3.0-or-later). El texto completo está disponible en el archivo [LICENSE](LICENSE).

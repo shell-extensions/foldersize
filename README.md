@@ -94,6 +94,8 @@ in any running supported file-manager process — the extension watches the
 file for changes. This means any external tool (for example a service
 pauser) can pause/resume scanning just by writing `auto_scan = false` /
 `true` to that file; no D-Bus or GSettings integration is required.
+[Loadshed](https://github.com/shell-extensions/loadshed) is one such tool
+and ships a ready-made Folder Size file-target preset.
 
 ## Translations
 Run `make compile` (or `make`) to compile `.po` files into `.mo`.
@@ -101,3 +103,8 @@ Run `make compile` (or `make`) to compile `.po` files into `.mo`.
 ## Notes
 - If a file manager still shows the old version after install/uninstall, restart it with `nautilus -q`, `caja -q` or `nemo -q`.
 - All state is kept in-memory per file-manager process; sizes are recalculated after a restart (subject to `cache_ttl`).
+
+## License
+
+Folder Size is free software, licensed under the GNU General Public License v3.0 or later
+(GPL-3.0-or-later). See the [LICENSE](LICENSE) file for the full text.

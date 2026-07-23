@@ -4,5 +4,6 @@
   "description": "Folder size column for Nautilus, Caja and Nemo with async jobs and multilingual support.",
   "gettext-domain": "foldersize",
   "version": 4,
-  "url": "https://github.com/system-extensions/foldersize"
+  "url": "https://github.com/nautilus-extensions/foldersize",
+  "license": "GPL-3.0-or-later"
 }

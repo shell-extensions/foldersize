@@ -99,6 +99,8 @@ in jedem laufenden unterstützten Dateimanager-Prozess aus — die Erweiterung
 (etwa ein Service-Pauser) den Scan pausieren/fortsetzen, indem es
 `auto_scan = false` bzw. `true` in diese Datei schreibt; weder D-Bus noch
 GSettings sind dafür nötig.
+[Loadshed](https://github.com/shell-extensions/loadshed) ist ein solches
+Werkzeug und liefert ein fertiges Folder-Size-Dateiziel-Preset mit.
 
 ## Übersetzungen
 `make compile` (oder `make`) ausführen, um `.po` zu `.mo` zu kompilieren.
@@ -106,3 +108,8 @@ GSettings sind dafür nötig.
 ## Hinweise
 - Zeigt ein Dateimanager nach Installation/Deinstallation noch die alte Version, starte ihn mit `nautilus -q`, `caja -q` oder `nemo -q` neu.
 - Der Zustand liegt im Arbeitsspeicher je Dateimanager-Prozess; nach einem Neustart werden Größen neu berechnet (abhängig von `cache_ttl`).
+
+## Lizenz
+
+Folder Size ist freie Software und steht unter der GNU General Public License v3.0 oder später
+(GPL-3.0-or-later). Der vollständige Text befindet sich in der Datei [LICENSE](LICENSE).
